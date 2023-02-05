@@ -1,0 +1,11 @@
+.msg-bar {
+  background-color: #fff;
+  border-radius: 8px;
+  line-height: 24px;
+  padding: 8px;
+  margin-top: 12px;
+}
+
+.msg-bar--me {
+  background-color: #a9e87a;
+}

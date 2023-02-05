@@ -1,0 +1,15 @@
+.voice-bar--me {
+  background-color: #a9e87a;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.voice-bar {
+  margin-top: 16px;
+  min-width: 100px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}

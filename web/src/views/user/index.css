@@ -1,0 +1,26 @@
+.user-container {
+}
+
+.user-panel {
+  width: 400px;
+  border-radius: 16px;
+  background-color: var(--color-grey-bg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-panel__msg-box {
+  flex: 1;
+}
+
+
+.user-panel__msg-box__msg {
+  color: #fff;
+}
+.user-panel__footer {
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--color-light-bg);
+}
