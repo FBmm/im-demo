@@ -18,8 +18,65 @@ const msgStore = new Map
 
 // io绑定事件 connection建立连接 断开链接 disconnected
 io.on('connection', socket => {
-  console.log('一个用户建立链接');
+  console.log('一个用户建立链接', socket.id);
 
+  // 开始聊天
+  socket.on('start', (user) => {
+    console.log('started1', user)
+    const findUser = () => {
+      return users.find(item => item.info.usernick === user.usernick && item.info.code === user.code)
+    }
+    let exsitUser = findUser()
+    console.log('started2', exsitUser)
+    
+    if (!exsitUser) {
+      console.log('新加入用户', user.usernick)
+      user.userImg = userImgMap[user.sex]
+      const userInfo = {
+        info: user,
+        uId: parseInt(Math.random() * 1000000000000000)
+      }
+      exsitUser = userInfo
+      users.push(userInfo)
+    }
+
+    socket.emit('started', exsitUser)
+    io.emit('trigger', {
+      type: 'user-list',
+      data: users
+    })
+  })
+
+  // 进入房间
+  socket.on('room', ([id1, id2] = []) => {
+    console.log('用户进入房间', id1)
+    const roomId = id1 < id2 ? `${id1}_${id2}` : `${id2}_${id1}`;
+    socket.join(roomId);
+    socket.emit('room-ok', {
+      id: roomId,
+      data: msgStore.get(roomId) // 聊天记录列表
+    })
+  })
+
+  // 进入群聊
+  socket.on('group', (groupId) => {
+    console.log('用户进入群', groupId)
+    socket.join(groupId);
+    socket.emit('room-ok', {
+      id: groupId,
+      data: msgStore.get(groupId) // 聊天记录列表
+    })
+  })
+
+  // 查询用户列表
+  socket.on('users', () => { 
+    console.log('查询用户', )
+    io.emit('user-list', {
+      users
+    })
+  })
+
+  // 发送消息
   socket.on('send', (roomId, msg) => { 
     console.log('发送消息', roomId, msg)
     if (!roomId || !msg) return
@@ -46,49 +103,6 @@ io.on('connection', socket => {
     console.log('查询历史消息')
     socket.emit('message', {
       msgs
-    })
-  })
-
-  // 开始聊天
-  socket.on('start', (user) => {
-    console.log('started1', user)
-    const findUser = () => {
-      return users.find(item => item.info.usernick === user.usernick && item.info.code === user.code)
-    }
-    let exsitUser = findUser()
-    console.log('started2', exsitUser)
-    if (!exsitUser) {
-      console.log('新加入用户', user.usernick)
-      user.userImg = userImgMap[user.sex]
-      const userInfo = {
-        info: user,
-        uId: parseInt(Math.random() * 1000000000000000)
-      }
-      exsitUser = userInfo
-      users.push(userInfo)
-    }
-    socket.emit('started', exsitUser)
-    io.emit('trigger', {
-      type: 'user-list',
-      data: users
-    })
-  })
-
-  // 进入房间
-  socket.on('room', ([id1, id2] = []) => {
-    console.log('用户进入房间', id1)
-    const roomId = id1 < id2 ? `${id1}_${id2}` : `${id2}_${id1}`;
-    socket.join(roomId);
-    socket.emit('room-ok', {
-      id: roomId,
-      data: msgStore.get(roomId) // 聊天记录列表
-    })
-  })
-
-  socket.on('users', () => { 
-    console.log('查询用户', )
-    io.emit('user-list', {
-      users
     })
   })
 })
